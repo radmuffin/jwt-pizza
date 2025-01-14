@@ -5,3 +5,6 @@ config.js
 coverage
 dist
 **/.vite
+/.idea/jwt-pizza.iml
+/.idea/modules.xml
+/.idea/vcs.xml
