@@ -8,3 +8,10 @@ dist
 /.idea/jwt-pizza.iml
 /.idea/modules.xml
 /.idea/vcs.xml
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
