@@ -9,7 +9,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "npx playwright test"
+    "test": "npx playwright test",
+    "test:coverage": "nyc --reporter=json-summary --reporter=text playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.1",
