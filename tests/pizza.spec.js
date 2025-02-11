@@ -189,3 +189,24 @@ test("register and logout", async ({ page }) => {
 	);
 	await expect(page.getByRole("main")).toContainText("800-555-5555");
 });
+
+test("visit about and history", async ({ page }) => {
+
+	await page.route("*/**/version.json", async (route) => {
+		const versionRes = { version: "1.0.0" };
+		await route.fulfill({ json: versionRes });
+	});
+
+	await page.goto("http://localhost:5173/");
+	await page.getByRole("link", { name: "About" }).click();
+	await expect(page.getByRole("main")).toContainText("The secret sauce");
+	await expect(
+		page
+			.locator("div")
+			.filter({ hasText: /^Brian$/ })
+			.getByRole("img")
+	).toBeVisible();
+	await page.getByRole("link", { name: "History" }).click();
+	await expect(page.getByRole("heading")).toContainText("Mama Rucci, my my");
+	await expect(page.getByRole("main").getByRole("img")).toBeVisible();
+});
