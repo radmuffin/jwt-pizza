@@ -191,7 +191,6 @@ test("register and logout", async ({ page }) => {
 });
 
 test("visit about and history", async ({ page }) => {
-
 	await page.route("*/**/version.json", async (route) => {
 		const versionRes = { version: "1.0.0" };
 		await route.fulfill({ json: versionRes });
@@ -209,4 +208,31 @@ test("visit about and history", async ({ page }) => {
 	await page.getByRole("link", { name: "History" }).click();
 	await expect(page.getByRole("heading")).toContainText("Mama Rucci, my my");
 	await expect(page.getByRole("main").getByRole("img")).toBeVisible();
+});
+
+test("verify jwt", async ({ page }) => {
+	await page.goto("http://localhost:5173/");
+	await page.getByRole("link", { name: "Order" }).click();
+	await page.getByRole("combobox").selectOption("1");
+	await page.getByRole("link", { name: "Image Description Crusty A" }).click();
+	await page.getByRole("button", { name: "Checkout" }).click();
+	await page.getByRole("textbox", { name: "Email address" }).click();
+	await page.getByRole("textbox", { name: "Email address" }).fill("d@jwt.com");
+	await page.getByRole("textbox", { name: "Email address" }).press("Tab");
+	await page.getByRole("textbox", { name: "Password" }).fill("a");
+	await page.getByRole("textbox", { name: "Password" }).press("Enter");
+	await page.getByRole("button", { name: "Login" }).click();
+	await expect(page.getByRole("main")).toContainText(
+		'{"code":404,"message":"unknown user"}'
+	);
+	await page.getByRole("textbox", { name: "Password" }).click();
+	await page.getByRole("textbox", { name: "Password" }).fill("diner");
+	await page.getByRole("button", { name: "Login" }).click();
+	await page.getByRole("button", { name: "Pay now" }).click();
+	await page.getByRole("button", { name: "Verify" }).click();
+	await expect(page.locator("h3")).toContainText("valid");
+	await page.getByRole("button", { name: "Close" }).click();
+	await page.getByRole("link", { name: "pd" }).click();
+	await expect(page.getByRole("main")).toContainText("diner");
+	await expect(page.getByRole("main")).toContainText("diner");
 });
