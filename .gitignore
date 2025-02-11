@@ -16,3 +16,5 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 .nyc_output/
+.idea/dataSources.xml
+.idea/sqldialects.xml
