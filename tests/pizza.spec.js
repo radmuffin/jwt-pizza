@@ -165,7 +165,9 @@ test("register and logout", async ({ page }) => {
 		await route.fulfill({ json: versionRes });
 	});
 
-	await page.goto("http://localhost:5173/");
+	// await page.goto("http://localhost:5173/");
+	await page.goto("/");
+
 	await page.getByRole("link", { name: "Register" }).click();
 	await expect(page.getByRole("heading")).toContainText(
 		"Welcome to the party"
@@ -196,7 +198,9 @@ test("visit about and history", async ({ page }) => {
 		await route.fulfill({ json: versionRes });
 	});
 
-	await page.goto("http://localhost:5173/");
+	// await page.goto("http://localhost:5173/");
+	await page.goto("/");
+
 	await page.getByRole("link", { name: "About" }).click();
 	await expect(page.getByRole("main")).toContainText("The secret sauce");
 	await expect(
@@ -247,13 +251,6 @@ test("verify jwt", async ({ page }) => {
 				price: 0.0028,
 				description: "A dry mouthed favorite",
 			},
-			{
-				id: 5,
-				title: "Charred Leopard",
-				image: "pizza5.png",
-				price: 0.0099,
-				description: "For those with a darker side",
-			},
 		];
 		expect(route.request().method()).toBe("GET");
 		await route.fulfill({ json: menuRes });
@@ -295,7 +292,6 @@ test("verify jwt", async ({ page }) => {
 		if (route.request().postDataJSON().password !== "diner") {
 			const failRes = {
 				message: "unknown user",
-				// stack: "Error: unknown user\n    at DB.getUser (C:\\Users\\spezd\\329\\jwt-pizza-service\\src\\database\\database.js:102:15)\n    at async C:\\Users\\spezd\\329\\jwt-pizza-service\\src\\routes\\authRouter.js:85:18",
 			};
 			await route.fulfill({ status: 404, json: failRes });
 		} else {
@@ -367,7 +363,9 @@ test("verify jwt", async ({ page }) => {
 
 	// there's another fetch to the factory but we should be chill leaving that one
 
-	await page.goto("http://localhost:5173/");
+	// await page.goto("http://localhost:5173/");
+	await page.goto("/");
+
 	await page.getByRole("link", { name: "Order" }).click();
 	await page.getByRole("combobox").selectOption("1");
 	await page.getByRole("link", { name: "Image Description Crusty A" }).click();
@@ -392,3 +390,63 @@ test("verify jwt", async ({ page }) => {
 	await expect(page.getByRole("main")).toContainText("diner");
 	await expect(page.getByRole("main")).toContainText("diner");
 });
+
+test("admin stuff", async ({ page }) => {
+	await page.route("*/**/version.json", async (route) => {
+		const versionRes = { version: "1.0.0" };
+		await route.fulfill({ json: versionRes });
+	});
+	// await page.route("*/**/api/auth", async (route) => {
+	// 	const loginReq = { email: "a@jwt.com", password: "a" };
+	// 	const loginRes = {
+	// 		user: {
+	// 			id: 3,
+	// 			name: "Kai Chen",
+	// 			email: "a@jwt.com",
+	// 			roles: [{ role: "admin" }],
+	// 		},
+	// 		token: "abcdef",
+	// 	};
+	// 	expect(route.request().method()).toBe("PUT");
+	// 	expect(route.request().postDataJSON()).toMatchObject(loginReq);
+	// 	await route.fulfill({ json: loginRes });
+	// });
+
+
+
+});
+
+// test("franchise stuff", async ({ page }) => {
+// 	await page.route("*/**/version.json", async (route) => {
+// 		const versionRes = { version: "1.0.0" };
+// 		await route.fulfill({ json: versionRes });
+// 	});
+	
+
+// 	await page.goto("http://localhost:5173/");
+// 	await page.getByRole("link", { name: "Login" }).click();
+// 	await expect(page.getByRole("heading")).toContainText("Welcome back");
+// 	await page.getByRole("textbox", { name: "Email address" }).click();
+// 	await page.getByRole("textbox", { name: "Email address" }).fill("f@jwt.com");
+// 	await page.getByRole("textbox", { name: "Email address" }).press("Tab");
+// 	await page.getByRole("textbox", { name: "Password" }).fill("a");
+// 	await page.getByRole("button", { name: "Login" }).click();
+// 	await expect(page.getByLabel("Global")).toContainText("JWT Pizza");
+// 	await page
+// 		.getByLabel("Global")
+// 		.getByRole("link", { name: "Franchise" })
+// 		.click();
+// 	await expect(page.getByRole("main")).toContainText(
+// 		"Everything you need to run an JWT Pizza franchise. Your gateway to success."
+// 	);
+// 	await page.getByRole("button", { name: "Create store" }).click();
+// 	await expect(page.getByRole("heading")).toContainText("Create store");
+// 	await page.getByRole("textbox", { name: "store name" }).click();
+// 	await page.getByRole("textbox", { name: "store name" }).fill("rg");
+// 	await page.getByRole("button", { name: "Create" }).click();
+// 	await expect(page.locator("tbody")).toContainText("rg");
+// 	await page.getByRole("button", { name: "Close" }).click();
+// 	await expect(page.getByRole("heading")).toContainText("Sorry to see you go");
+// 	await page.getByRole("button", { name: "Close" }).click();
+// 	await page.getByRole("button", { name: "Close" }).click();
+// });
