@@ -396,24 +396,115 @@ test("admin stuff", async ({ page }) => {
 		const versionRes = { version: "1.0.0" };
 		await route.fulfill({ json: versionRes });
 	});
-	// await page.route("*/**/api/auth", async (route) => {
-	// 	const loginReq = { email: "a@jwt.com", password: "a" };
-	// 	const loginRes = {
-	// 		user: {
-	// 			id: 3,
-	// 			name: "Kai Chen",
-	// 			email: "a@jwt.com",
-	// 			roles: [{ role: "admin" }],
-	// 		},
-	// 		token: "abcdef",
-	// 	};
-	// 	expect(route.request().method()).toBe("PUT");
-	// 	expect(route.request().postDataJSON()).toMatchObject(loginReq);
-	// 	await route.fulfill({ json: loginRes });
-	// });
+	await page.route("*/**/api/auth", async (route) => {
+		const loginReq = { email: "a@jwt.com", password: "a" };
+		const loginRes = {
+			user: {
+				id: 1,
+				name: "common_name",
+				email: "a@jwt.com",
+				roles: [
+					{
+						role: "admin",
+					},
+				],
+			},
+			token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmFtZSI6ImNvbW1vbl9uYW1lIiwiZW1haWwiOiJhQGp3dC5jb20iLCJyb2xlcyI6W3sicm9sZSI6ImFkbWluIn1dLCJpYXQiOjE3Mzk0MjU3NTR9.qly-1FZbY4XiTbP_sW_mPq4pBiNhWGumHmb2-4oB79A",
+		};
+		expect(route.request().method()).toBe("PUT");
+		expect(route.request().postDataJSON()).toMatchObject(loginReq);
+		await route.fulfill({ json: loginRes });
+	});
 
+	await page.route("*/**/api/franchise", async (route) => {
+		if (route.request().method() === "POST") {
+			const franReq = {
+				stores: [],
+				id: "",
+				name: "blah",
+				admins: [
+					{
+						email: "f@jwt.com",
+					},
+				],
+			};
+			const franchiseRes = {
+				stores: [],
+				id: 3,
+				name: "blah",
+				admins: [
+					{
+						email: "f@jwt.com",
+						id: 3,
+						name: "pizza franchisee",
+					},
+				],
+			};
+			expect(route.request().postDataJSON()).toMatchObject(franReq);
+			await route.fulfill({ json: franchiseRes });
+		}
+		else if (route.request().method() === "GET") {
+			const franRes = [
+				{
+					id: 3,
+					name: "blah",
+					admins: [
+						{
+							id: 3,
+							name: "pizza franchisee",
+							email: "f@jwt.com",
+						},
+					],
+					stores: [],
+				},
+				{
+					id: 1,
+					name: "pizzaPocket",
+					admins: [
+						{
+							id: 3,
+							name: "pizza franchisee",
+							email: "f@jwt.com",
+						},
+					],
+					stores: [
+						{
+							id: 1,
+							name: "SLC",
+							totalRevenue: 0,
+						},
+					],
+				},
+			];
+			await route.fulfill({ json: franRes });
+		}
+	});
 
-
+	// await page.goto("http://localhost:5173/");
+	await page.goto("/");
+	await page.getByRole("link", { name: "Login" }).click();
+	await page.getByRole("textbox", { name: "Email address" }).fill("a@jwt.com");
+	await page.getByRole("textbox", { name: "Email address" }).press("Tab");
+	await page.getByRole("textbox", { name: "Password" }).fill("a");
+	await page.getByRole("button", { name: "Login" }).click();
+	await page.getByRole("link", { name: "Admin" }).click();
+	await expect(page.getByRole("main")).toContainText("Add Franchise");
+	await page.getByRole("button", { name: "Add Franchise" }).click();
+	await page.getByRole("textbox", { name: "franchise name" }).click();
+	await page.getByRole("textbox", { name: "franchise name" }).fill("blah");
+	await page.getByRole("textbox", { name: "franchise name" }).press("Tab");
+	await page
+		.getByRole("textbox", { name: "franchisee admin email" })
+		.fill("f@jwt.com");
+	await page.getByRole("button", { name: "Create" }).click();
+	await expect(page.getByRole("main")).toContainText(
+		"Keep the dough rolling and the franchises signing up."
+	);
+	await page
+		.getByRole("row", { name: "blah pizza franchisee Close" })
+		.getByRole("button")
+		.click();
+	await page.getByRole("button", { name: "Close" }).click();
 });
 
 // test("franchise stuff", async ({ page }) => {
@@ -421,7 +512,6 @@ test("admin stuff", async ({ page }) => {
 // 		const versionRes = { version: "1.0.0" };
 // 		await route.fulfill({ json: versionRes });
 // 	});
-	
 
 // 	await page.goto("http://localhost:5173/");
 // 	await page.getByRole("link", { name: "Login" }).click();
