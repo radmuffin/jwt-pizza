@@ -54,8 +54,8 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     environment:
-      name: production
-      url: https://pizza.radmuffin.click
+      name: staging
+      url: https://stage-pizza.radmuffin.click
     env:
       version: ${{needs.build.outputs.version}}
     steps:
